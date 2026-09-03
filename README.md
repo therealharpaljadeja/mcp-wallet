@@ -19,157 +19,89 @@ The current transfer implementation supports native testnet MON only. ERC-20 tra
 
 ---
 
-## For users: run and connect MCP Wallet
+## For users
 
-### Requirements
+### 1. Create your wallet
 
-- [Docker Desktop](https://www.docker.com/products/docker-desktop/) running locally.
-- A Dynamic sandbox environment.
-- A local MCP-compatible coding agent, such as Codex.
-- Git, if you are cloning the repository.
+Visit the [MCP Wallet website](https://web-production-5396e.up.railway.app/), select **Continue with email**, and complete sign-up.
 
-The coding agent must run on the same computer as the local services. A remote agent cannot access your machine's `localhost` MCP URL.
+### 2. Connect your coding agent
 
-### 1. Configure Dynamic
+Add this remote HTTP MCP server to your MCP-compatible agent:
 
-Create a sandbox environment in the [Dynamic dashboard](https://app.dynamic.xyz) and configure it as follows:
+| Setting | Value |
+|---|---|
+| Name | `mcp-wallet` |
+| URL | [https://sweet-grace-production-42fd.up.railway.app/mcp](https://sweet-grace-production-42fd.up.railway.app/mcp) |
 
-1. Enable **Email OTP** authentication.
-2. Disable social, phone, passkey, guest, and external-wallet login.
-3. Enable EVM embedded wallets and **Create on sign up**.
-4. Disable embedded-wallet creation for third-party wallet signups.
-5. Add `http://localhost:3000` to the allowed origins.
-6. Copy the environment ID.
+Complete the authorization screen when it opens.
 
-### 2. Configure the project
+### 3. Use it
 
-From the repository root:
+Ask your agent to get your wallet address or prepare a Monad testnet transfer. Preparing a transfer never moves funds by itself; every transfer must be reviewed and approved in your browser.
 
-```bash
-cp .env.example .env
-```
+> MCP Wallet currently uses Monad testnet. Use testnet funds only.
 
-Edit `.env` and provide at least:
+---
 
-```dotenv
-DYNAMIC_ENVIRONMENT_ID=your-dynamic-environment-id
-TOKEN_PEPPER=replace-this-with-a-long-random-local-value
-```
+## For contributors: develop MCP Wallet
 
-Do not commit `.env`. It is intentionally ignored by Git.
+### Local setup
 
-### 3. Start the services
+1. Install [Docker Desktop](https://www.docker.com/products/docker-desktop/) with Docker Compose and Git.
+2. Create a sandbox environment in the [Dynamic dashboard](https://app.dynamic.xyz).
+3. Enable Email OTP authentication and EVM embedded wallets with **Create on sign up**.
+4. Copy the Dynamic environment ID.
+5. Create the local environment file:
 
-```bash
-docker compose up --build
-```
+   ```bash
+   cp .env.example .env
+   ```
+
+6. Set at least these values in `.env`:
+
+   ```dotenv
+   DYNAMIC_ENVIRONMENT_ID=your-dynamic-environment-id
+   TOKEN_PEPPER=replace-this-with-a-long-random-value
+   ```
+
+   Generate a suitable pepper with `openssl rand -hex 32`. Never commit `.env`.
+
+7. Build and start the complete stack:
+
+   ```bash
+   docker compose up --build
+   ```
 
 The first build may take several minutes. The one-shot `migrate` service must finish before the API, web application, and worker become ready.
 
-Once the services are healthy:
-
-| Service | URL |
+| Local service | URL |
 |---|---|
 | Wallet website | [http://localhost:3000](http://localhost:3000) |
 | MCP endpoint | `http://localhost:3001/mcp` |
 | API health | [http://localhost:3001/health](http://localhost:3001/health) |
 | API readiness | [http://localhost:3001/ready](http://localhost:3001/ready) |
 
-To run in the background instead:
+To run in the background and follow logs:
 
 ```bash
 docker compose up --build -d
 docker compose logs -f
 ```
 
-### 4. Create the wallet
-
-1. Open [http://localhost:3000](http://localhost:3000).
-2. Select **Continue with email**.
-3. Complete the email OTP flow.
-4. Wait for the embedded Monad testnet wallet address to appear.
-
-### 5. Add the MCP server to your coding agent
-
-Add an HTTP/remote MCP server with:
-
-| Setting | Value |
-|---|---|
-| Name | `mcp-wallet` |
-| URL | `http://localhost:3001/mcp` |
-
-The agent should discover OAuth automatically and open the authorization page. Review the requested permissions, sign in with the wallet owner's email, and select **Authorize agent**.
-
-If the connection was created before a new OAuth scope or tool was added, remove and add the MCP server again. OAuth refresh tokens cannot silently gain broader permissions.
-
-### 6. Test address access
-
-Ask the coding agent:
-
-> Use MCP Wallet to get my wallet address.
-
-The returned address should match the address on the wallet website and identify Monad testnet chain ID `10143`.
-
-### 7. Test a transfer
-
-The wallet needs testnet MON before it can send a transfer.
-
-Ask the coding agent:
-
-> Prepare a transfer of 0.01 MON to `0x...`.
-
-The agent calls `wallet_prepare_transfer` and returns a browser approval URL. Open it within 10 minutes, then:
-
-1. Confirm the requesting client, sender, full recipient address, amount, and network.
-2. Select **Approve** to sign and broadcast through Dynamic, or **Reject** to cancel.
-3. Ask the agent to call `wallet_get_transfer_status` with the request ID.
-
-Preparing a transfer does not move funds. Only explicit approval in the browser signs and broadcasts it.
-
-Approval links are single-use. The first approval attempt reserves the request before the wallet opens. If signing is cancelled after that point, ask the agent to prepare a new transfer instead of reusing the link.
-
-### Stop or restart the project
-
-Stop and remove the service containers while preserving PostgreSQL data:
+To stop and remove the containers while preserving PostgreSQL data:
 
 ```bash
 docker compose down
 ```
 
-Stop without removing the containers:
-
-```bash
-docker compose stop
-```
-
-Start existing containers again:
-
-```bash
-docker compose start
-```
-
-Delete all local project data, including the PostgreSQL volume:
+To also delete the local PostgreSQL volume:
 
 ```bash
 docker compose down -v
 ```
 
-The final command is destructive and cannot recover previously stored wallets, OAuth grants, or transfer records.
-
-### Common problems
-
-| Problem | What to check |
-|---|---|
-| Docker cannot connect | Start Docker Desktop and wait until its engine is ready. |
-| Port `3000`, `3001`, or `5432` is busy | Stop the conflicting process or change the Compose port mapping. |
-| Dynamic login does not load | Confirm `DYNAMIC_ENVIRONMENT_ID` and the `http://localhost:3000` allowed origin. |
-| A new MCP tool is missing | Remove and re-add the MCP connection, approve its scopes, and start a new agent task. |
-| Transfer approval fails | Confirm the wallet is on Monad testnet, has enough testnet MON, and the request has not expired. |
-| Services do not become healthy | Run `docker compose logs -f api web migrate postgres`. |
-
----
-
-## For contributors: develop MCP Wallet
+The second command permanently deletes local users, OAuth grants, and transfer records.
 
 ### Toolchain
 
