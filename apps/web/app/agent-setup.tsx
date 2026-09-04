@@ -77,14 +77,14 @@ export function AgentSetup({ mcpUrl }: { mcpUrl: string }) {
   const guides = getGuides(mcpUrl);
   const defaultGuide = guides[0]!;
   const [activeId, setActiveId] = useState<AgentId>("codex");
-  const [copied, setCopied] = useState<"url" | "snippet">();
+  const [copied, setCopied] = useState(false);
   const tabRefs = useRef<Array<HTMLButtonElement | null>>([]);
   const activeGuide = guides.find((guide) => guide.id === activeId) ?? defaultGuide;
 
-  async function copy(value: string, target: "url" | "snippet") {
+  async function copy(value: string) {
     await navigator.clipboard.writeText(value);
-    setCopied(target);
-    window.setTimeout(() => setCopied(undefined), 1_600);
+    setCopied(true);
+    window.setTimeout(() => setCopied(false), 1_600);
   }
 
   function moveTab(currentIndex: number, direction: number) {
@@ -100,14 +100,6 @@ export function AgentSetup({ mcpUrl }: { mcpUrl: string }) {
         <div>
           <h2 id="agent-setup-title">Connect your agent</h2>
           <p>Choose your coding agent and follow the steps.</p>
-        </div>
-        <div className="mcp-url" aria-label="MCP server URL">
-          <code>{mcpUrl}</code>
-          <CopyButton
-            label={copied === "url" ? "URL copied" : "Copy MCP URL"}
-            copied={copied === "url"}
-            onClick={() => copy(mcpUrl, "url")}
-          />
         </div>
       </div>
 
@@ -165,10 +157,10 @@ export function AgentSetup({ mcpUrl }: { mcpUrl: string }) {
             </pre>
             <CopyButton
               label={
-                copied === "snippet" ? "Configuration copied" : "Copy configuration"
+                copied ? "Configuration copied" : "Copy configuration"
               }
-              copied={copied === "snippet"}
-              onClick={() => copy(activeGuide.snippet!, "snippet")}
+              copied={copied}
+              onClick={() => copy(activeGuide.snippet!)}
             />
           </div>
         ) : null}

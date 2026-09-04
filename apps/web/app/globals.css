@@ -65,7 +65,7 @@ a:hover { text-decoration: underline; }
 .icon-button:hover { border-color: var(--color-stone); background: var(--color-bone); }
 .icon-button svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
 
-.wallet-panel { position: relative; padding: 24px; border: 1px solid rgba(38, 37, 30, .08); border-radius: var(--radius-card); background: var(--color-bone); box-shadow: var(--shadow-paper); }
+.wallet-panel { position: relative; padding: 24px; border: 1px solid rgba(38, 37, 30, .08); border-radius: var(--radius-card); background: var(--color-bone); box-shadow: 0 8px 20px rgba(38, 37, 30, .07), 0 0 0 1px rgba(38, 37, 30, .03); }
 .wallet-panel::before { display: none; }
 .panel-header { display: flex; align-items: flex-start; justify-content: space-between; padding-bottom: 24px; border-bottom: 1px solid var(--color-stone); }
 .panel-label, .address-block > span, .selected-wallet > span { display: block; margin-bottom: 6px; color: var(--color-ash); font-family: var(--font-mono); font-size: 12px; font-weight: 400; letter-spacing: .03em; text-transform: uppercase; }
@@ -83,12 +83,10 @@ a:hover { text-decoration: underline; }
 .network-dot { width: 8px; height: 8px; border: 1px solid var(--color-ash); border-radius: 50%; background: transparent; }
 .empty-state { min-height: 220px; display: grid; align-content: center; justify-items: center; gap: 16px; color: var(--color-driftwood); font-family: var(--font-editorial); text-align: center; }
 
-.agent-setup { overflow: hidden; border: 1px solid rgba(38, 37, 30, .08); border-radius: var(--radius-card); background: var(--color-bone); box-shadow: var(--shadow-paper); }
-.setup-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 24px; padding: 24px; }
+.agent-setup { overflow: hidden; border: 1px solid rgba(38, 37, 30, .08); border-radius: var(--radius-card); background: var(--color-bone); box-shadow: 0 8px 20px rgba(38, 37, 30, .07), 0 0 0 1px rgba(38, 37, 30, .03); }
+.setup-heading { padding: 24px; }
 .setup-heading h2 { margin: 0 0 5px; font-size: 26px; font-weight: 400; letter-spacing: -.012em; }
 .setup-heading p { margin: 0; color: var(--color-ash); font-family: var(--font-editorial); font-size: 15px; }
-.mcp-url { width: min(100%, 390px); display: flex; align-items: center; gap: 8px; padding: 6px; border: 1px solid rgba(38, 37, 30, .06); border-radius: 4px; background: var(--color-linen); }
-.mcp-url code { flex: 1; min-width: 0; overflow: hidden; padding-left: 6px; color: var(--color-ash); font-family: var(--font-mono); font-size: 11px; text-overflow: ellipsis; white-space: nowrap; }
 .setup-copy-button { width: 34px; height: 34px; display: grid; flex: 0 0 auto; place-items: center; padding: 0; border: 1px solid transparent; border-radius: 4px; color: var(--color-ink); background: var(--color-parchment); }
 .setup-copy-button:hover { border-color: var(--color-stone); }
 .setup-copy-button:focus-visible, .agent-tab:focus-visible { outline: 2px solid var(--color-amber); outline-offset: -2px; }
@@ -100,7 +98,7 @@ a:hover { text-decoration: underline; }
 .agent-tab .agent-logo { width: 18px; height: 18px; fill: currentColor; stroke: none; }
 .agent-tab .claude-logo { fill: #d97757; }
 .agent-tab .cursor-logo { width: 19px; height: 19px; }
-.agent-guide { display: grid; grid-template-columns: minmax(0, 1fr) minmax(280px, .85fr); gap: 28px; padding: 24px; }
+.agent-guide { display: grid; grid-template-columns: minmax(0, 1fr); gap: 28px; padding: 28px 24px; }
 .agent-guide.no-snippet { grid-template-columns: 1fr; }
 .setup-steps { display: grid; gap: 18px; margin: 0; padding: 0; list-style: none; }
 .setup-steps li { display: grid; grid-template-columns: 24px minmax(0, 1fr); gap: 12px; align-items: start; }
@@ -108,10 +106,10 @@ a:hover { text-decoration: underline; }
 .setup-steps p { margin: 1px 0 0; color: var(--color-driftwood); font-size: 13px; line-height: 1.55; }
 .setup-steps strong { color: var(--color-ink); font-weight: 500; }
 .setup-steps code { padding: 2px 4px; border-radius: 3px; color: var(--color-ink); background: var(--color-linen); font-family: var(--font-mono); font-size: 11px; }
-.setup-snippet { position: relative; align-self: start; min-width: 0; padding: 16px 48px 16px 16px; border-radius: 4px; color: var(--color-parchment); background: var(--color-ink); }
+.setup-snippet { position: relative; width: 100%; min-width: 0; padding: 22px 56px 22px 20px; border-radius: 4px; color: var(--color-parchment); background: var(--color-ink); }
 .setup-snippet > span { display: block; margin-bottom: 10px; color: var(--color-mist); font-family: var(--font-mono); font-size: 10px; letter-spacing: .04em; text-transform: uppercase; }
-.setup-snippet pre { max-width: 100%; margin: 0; overflow-x: auto; }
-.setup-snippet code { color: inherit; font-family: var(--font-mono); font-size: 10px; line-height: 1.6; white-space: pre; }
+.setup-snippet pre { max-width: 100%; margin: 0; overflow: hidden; white-space: pre-wrap; }
+.setup-snippet code { color: inherit; font-family: var(--font-mono); font-size: 10px; line-height: 1.6; overflow-wrap: anywhere; white-space: inherit; }
 .setup-snippet .setup-copy-button { position: absolute; top: 10px; right: 10px; color: var(--color-parchment); background: rgba(255, 255, 255, .08); }
 .setup-test { grid-column: 1 / -1; margin: 0; padding: 13px 16px; border-left: 2px solid var(--color-amber); color: var(--color-driftwood); background: var(--color-linen); font-family: var(--font-editorial); font-size: 14px; }
 .setup-test span { margin-right: 10px; color: var(--color-amber); font-family: var(--font-mono); font-size: 10px; letter-spacing: .04em; text-transform: uppercase; }
@@ -169,8 +167,6 @@ a:hover { text-decoration: underline; }
   .hero-solo { min-height: calc(100vh - 64px); padding-bottom: 96px; }
   .hero-copy h1 { font-size: clamp(3rem, 14vw, 4.25rem); }
   .hero-wallet { gap: 20px; }
-  .setup-heading { display: grid; }
-  .mcp-url { width: 100%; }
   .agent-guide { grid-template-columns: 1fr; }
   .setup-test { grid-column: auto; }
 }
