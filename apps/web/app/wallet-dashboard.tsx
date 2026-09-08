@@ -174,6 +174,12 @@ export function WalletDashboard() {
           </>
         ) : null}
       </section>
+
+      {!isLoggedIn ? (
+        <div className="public-agent-setup">
+          <AgentSetup mcpUrl={mcpUrl} />
+        </div>
+      ) : null}
     </main>
   );
 }
