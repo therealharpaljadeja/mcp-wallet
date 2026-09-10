@@ -134,7 +134,7 @@ export function AgentSetup({ mcpUrl }: { mcpUrl: string }) {
     <section className="agent-setup" aria-labelledby="agent-setup-title">
       <div className="setup-heading">
         <div>
-          <h2 id="agent-setup-title">Add MCP Wallet to your agent</h2>
+          <h2 id="agent-setup-title">Add DUO to your agent</h2>
           <p>Choose an agent. Connect in a few steps.</p>
         </div>
       </div>
@@ -209,7 +209,7 @@ export function AgentSetup({ mcpUrl }: { mcpUrl: string }) {
 
         <p className="setup-test">
           <span>Test it</span>
-          Ask your agent: <q>What is my MCP Wallet address?</q>
+          Ask your agent: <q>What is my DUO wallet address?</q>
         </p>
       </div>
     </section>

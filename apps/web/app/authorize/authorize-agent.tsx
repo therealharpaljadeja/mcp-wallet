@@ -96,7 +96,7 @@ export function AuthorizeAgent() {
     <main className="centered-page">
       <section className="auth-card">
         <span className="eyebrow">Coding agent connection</span>
-        <h1>Authorize MCP Wallet</h1>
+        <h1>Authorize DUO</h1>
         <p>
           {authorization?.client_name ?? "Your coding agent"} is requesting the
           permissions below. Every transfer still requires your explicit browser approval.

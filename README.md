@@ -1,6 +1,6 @@
-# MCP Wallet
+# DUO
 
-MCP Wallet is an OAuth-protected Model Context Protocol server backed by a Dynamic embedded wallet on Monad testnet.
+DUO is an OAuth-protected wallet with a Model Context Protocol server, backed by a Dynamic embedded wallet on Monad testnet.
 
 It lets a coding agent read a wallet address and prepare native MON transfers. The agent never receives a private key or signing authority: every transfer is reviewed and signed by the wallet owner in the browser.
 
@@ -23,7 +23,7 @@ The current transfer implementation supports native testnet MON only. ERC-20 tra
 
 ### 1. Create your wallet
 
-Visit the [MCP Wallet website](https://web-production-5396e.up.railway.app/), select **Continue with email**, and complete sign-up.
+Visit the [DUO website](https://web-production-5396e.up.railway.app/), select **Continue with email**, and complete sign-up.
 
 ### 2. Connect your coding agent
 
@@ -40,11 +40,11 @@ Complete the authorization screen when it opens.
 
 Ask your agent to get your wallet address or prepare a Monad testnet transfer. Preparing a transfer never moves funds by itself; every transfer must be reviewed and approved in your browser.
 
-> MCP Wallet currently uses Monad testnet. Use testnet funds only.
+> DUO currently uses Monad testnet. Use testnet funds only.
 
 ---
 
-## For contributors: develop MCP Wallet
+## For contributors: develop DUO
 
 ### Local setup
 

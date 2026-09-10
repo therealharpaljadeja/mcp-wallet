@@ -1,4 +1,10 @@
-import type { Database } from "@mcp-wallet/db";
+import {
+  oauthClients,
+  transferRequests,
+  users,
+  wallets,
+  type Database,
+} from "@mcp-wallet/db";
 import Fastify from "fastify";
 import { afterEach, describe, expect, it } from "vitest";
 import type { Environment } from "./env.js";
@@ -61,6 +67,34 @@ function createClaimDatabase() {
   return { database: database as unknown as Database, state };
 }
 
+function createTransferDatabase() {
+  const captured: { transfer?: Record<string, unknown> } = {};
+  const database = {
+    insert(table: unknown) {
+      const query = {
+        values(values: Record<string, unknown>) {
+          if (table === transferRequests) captured.transfer = values;
+          return query;
+        },
+        onConflictDoUpdate: () => query,
+        onConflictDoNothing: async () => [],
+        async returning() {
+          if (table === users) {
+            return [{ id: "user-1", email: "owner@example.com" }];
+          }
+          if (table === wallets) {
+            return [{ id: "wallet-1", address: walletAddress, chain: "EVM" }];
+          }
+          if (table === oauthClients) return [];
+          return [{ id: transferId, expiresAt: new Date("2030-01-01T00:00:00.000Z") }];
+        },
+      };
+      return query;
+    },
+  };
+  return { captured, database: database as unknown as Database };
+}
+
 describe("transfer approval claims", () => {
   const apps: ReturnType<typeof Fastify>[] = [];
 
@@ -96,5 +130,55 @@ describe("transfer approval claims", () => {
       status: "approval_in_progress",
     });
     expect(state.status).toBe("approval_in_progress");
+  });
+});
+
+describe("web transfer creation", () => {
+  const apps: ReturnType<typeof Fastify>[] = [];
+
+  afterEach(async () => {
+    await Promise.all(apps.splice(0).map((app) => app.close()));
+  });
+
+  it("creates an immutable pending request for the authenticated wallet", async () => {
+    const app = Fastify();
+    apps.push(app);
+    const { captured, database } = createTransferDatabase();
+    await registerTransferRoutes(app, {
+      db: database,
+      environment,
+      verifyDynamicToken: async () => ({
+        dynamicUserId: "dynamic-user-1",
+        email: "owner@example.com",
+        wallet: { address: walletAddress },
+      }),
+    });
+
+    const response = await app.inject({
+      method: "POST",
+      url: "/api/transfers",
+      headers: { authorization: "Bearer dynamic-token" },
+      payload: {
+        wallet_address: walletAddress,
+        recipient_address: "0x2222222222222222222222222222222222222222",
+        amount: "1.25",
+      },
+    });
+
+    expect(response.statusCode).toBe(201);
+    expect(response.json()).toMatchObject({
+      id: transferId,
+      status: "pending_approval",
+      amount: "1.25",
+      symbol: "MON",
+      approval_url: `http://localhost:3000/transfer/${transferId}`,
+    });
+    expect(captured.transfer).toMatchObject({
+      userId: "user-1",
+      walletId: "wallet-1",
+      clientId: "duo-web",
+      recipientAddress: "0x2222222222222222222222222222222222222222",
+      amountWei: "1250000000000000000",
+    });
   });
 });
