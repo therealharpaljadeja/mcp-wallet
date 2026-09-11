@@ -8,6 +8,7 @@ import { registerMcpRoutes } from "./mcp.js";
 import { registerOAuthRoutes } from "./oauth.js";
 import { registerSessionRoutes } from "./session.js";
 import { registerTransferRoutes } from "./transfers.js";
+import { registerWalletRoutes } from "./wallet.js";
 
 export async function buildApp(environment: Environment) {
   const app = Fastify({
@@ -49,6 +50,11 @@ export async function buildApp(environment: Environment) {
     verifyDynamicToken,
   });
   await registerSessionRoutes(app, { db: database.db, verifyDynamicToken });
+  await registerWalletRoutes(app, {
+    db: database.db,
+    environment,
+    verifyDynamicToken,
+  });
   await registerTransferRoutes(app, {
     db: database.db,
     environment,

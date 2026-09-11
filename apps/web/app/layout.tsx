@@ -6,7 +6,7 @@ import { Providers } from "./providers";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "MCP Wallet",
+  title: "DUO",
   description: "A developer wallet that connects securely to your coding agent.",
 };
 

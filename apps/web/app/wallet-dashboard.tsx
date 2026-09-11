@@ -7,10 +7,10 @@ import {
   useIsLoggedIn,
   useUserWallets,
 } from "@dynamic-labs/sdk-react-core";
-import { MONAD_TESTNET } from "@mcp-wallet/shared";
 import { useEffect, useMemo, useState } from "react";
 import { AgentSetup } from "./agent-setup";
 import { usePublicConfig } from "./providers";
+import { WalletWorkspace } from "./wallet-workspace";
 
 export function WalletDashboard() {
   const { apiUrl } = usePublicConfig();
@@ -19,7 +19,6 @@ export function WalletDashboard() {
   const wallets = useUserWallets();
   const { sdkHasLoaded, setShowAuthFlow } = useDynamicContext();
   const [showDisclaimer, setShowDisclaimer] = useState(true);
-  const [copied, setCopied] = useState(false);
   const [syncError, setSyncError] = useState<string>();
   const wallet = useMemo(
     () =>
@@ -62,19 +61,12 @@ export function WalletDashboard() {
     return () => controller.abort();
   }, [isLoggedIn, wallet?.address]);
 
-  async function copyAddress() {
-    if (!wallet?.address) return;
-    await navigator.clipboard.writeText(wallet.address);
-    setCopied(true);
-    window.setTimeout(() => setCopied(false), 1_600);
-  }
-
   return (
     <main className="shell">
       <header className="topbar">
-        <a className="brand" href="/" aria-label="MCP Wallet home">
-          <span className="brand-mark">M</span>
-          <span>MCP Wallet</span>
+        <a className="brand" href="/" aria-label="DUO home">
+          <span className="brand-mark">D</span>
+          <span>DUO</span>
         </a>
         {isLoggedIn ? <DynamicWidget variant="dropdown" /> : null}
       </header>
@@ -91,7 +83,7 @@ export function WalletDashboard() {
             <span className="panel-label">Testnet notice</span>
             <h2 id="disclaimer-title">Use test funds only.</h2>
             <p id="disclaimer-copy">
-              Review every transfer before approving. MCP Wallet is
+              Review every transfer before approving. DUO is
               experimental and not financial advice.
             </p>
             <button
@@ -123,57 +115,23 @@ export function WalletDashboard() {
 
         {isLoggedIn ? (
           <>
-            <div className="wallet-panel" aria-live="polite">
-              <div className="panel-header">
-                <div>
-                  <h2>Your wallet</h2>
-                </div>
+            {wallet ? <WalletWorkspace walletAddress={wallet.address} /> : (
+              <div className="wallet-panel empty-state">
+                <span className="pulse" />
+                <p>Creating your embedded EVM wallet…</p>
               </div>
-
-              {wallet ? (
-                <>
-                  <div className="address-block">
-                    <span>Wallet address</span>
-                    <div className="address-row">
-                      <code>{wallet.address}</code>
-                      <button
-                        className="icon-button"
-                        aria-label={copied ? "Copied" : "Copy address"}
-                        title={copied ? "Copied" : "Copy address"}
-                        onClick={copyAddress}
-                      >
-                        {copied ? (
-                          <svg viewBox="0 0 24 24" aria-hidden="true">
-                            <path d="m5 12 4 4L19 6" />
-                          </svg>
-                        ) : (
-                          <svg viewBox="0 0 24 24" aria-hidden="true">
-                            <rect x="8" y="8" width="11" height="11" rx="2" />
-                            <path d="M16 8V7a2 2 0 0 0-2-2H7a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h1" />
-                          </svg>
-                        )}
-                      </button>
-                    </div>
-                  </div>
-                  <div className="network-row">
-                    <span className="network-dot" />
-                    <div>
-                      <strong>{MONAD_TESTNET.name}</strong>
-                    </div>
-                  </div>
-                  {syncError ? <p className="inline-error">{syncError}</p> : null}
-                </>
-              ) : (
-                <div className="empty-state">
-                  <span className="pulse" />
-                  <p>Creating your embedded EVM wallet…</p>
-                </div>
-              )}
-            </div>
+            )}
+            {syncError ? <p className="inline-error dashboard-error">{syncError}</p> : null}
             <AgentSetup mcpUrl={mcpUrl} />
           </>
         ) : null}
       </section>
+
+      {!isLoggedIn ? (
+        <div className="public-agent-setup">
+          <AgentSetup mcpUrl={mcpUrl} />
+        </div>
+      ) : null}
     </main>
   );
 }

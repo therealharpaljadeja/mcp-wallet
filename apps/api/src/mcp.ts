@@ -51,7 +51,7 @@ function createWalletServer(
         content: [
           {
             type: "text" as const,
-            text: `Your MCP wallet address is ${wallet.address} on ${MONAD_TESTNET.name} (chain ID ${MONAD_TESTNET.id}).`,
+            text: `Your DUO wallet address is ${wallet.address} on ${MONAD_TESTNET.name} (chain ID ${MONAD_TESTNET.id}).`,
           },
         ],
         structuredContent: result,
